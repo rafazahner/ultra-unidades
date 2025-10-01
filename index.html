@@ -3,229 +3,299 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Consulta de Unidade • Ultra</title>
-<meta name="description" content="Digite o número da unidade e veja o nome e o consultor responsável." />
+<title>Consulta de Unidades • Ultra</title>
+<meta name="description" content="Digite o código da unidade para visualizar os detalhes." />
 <style>
-:root{
-  --bg: #0b1020;
-  --card: rgba(255,255,255,.08);
-  --muted: rgba(255,255,255,.7);
-  --text: #f8fafc;
-  --accent: #7c3aed;
-  --accent2: #06b6d4;
-  --ring: rgba(124,58,237,.55);
+:root {
+  /* Nova paleta de cores baseada na descrição */
+  --theme-orange: #FF7700;
+  --theme-purple: #9933EA;
+  --theme-cyan: #22D3EE;
+  --bg-light: #F0F2F5;
+  --surface-white: #FFFFFF;
+  --text-dark: #212529;
+  --text-muted: #6C757D;
+  --border-light: #DEE2E6;
 }
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji","Segoe UI Emoji";
-  color:var(--text);
-  background: radial-gradient(1200px 800px at 10% 10%, rgba(124,58,237,.25), transparent 60%),
-              radial-gradient(1000px 700px at 90% 20%, rgba(6,182,212,.20), transparent 60%),
-              linear-gradient(180deg, #0b1020, #0a0e1a 40%, #070a14);
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--text-dark);
+  background-color: var(--bg-light);
 }
-.container{max-width:1000px;margin:0 auto;padding:32px 20px 60px}
-.header{display:flex;gap:14px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
-.logo{
-  width:44px;height:44px;border-radius:12px;background:
-  conic-gradient(from 180deg at 50% 50%, var(--accent), var(--accent2), var(--accent));
-  box-shadow: 0 8px 30px rgba(124,58,237,.35), inset 0 0 12px rgba(255,255,255,.15);
+.top-banner {
+  background-color: var(--theme-orange);
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
 }
-.hgroup h1{margin:0;font-size:1.6rem;letter-spacing:.3px}
-.hgroup p{margin:2px 0 0;color:var(--muted)}
-
-.card{
-  background:backdrop-filter(saturate(140%) blur(10px));
-  background-color: var(--card);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+.logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: conic-gradient(from 180deg at 50% 50%, var(--theme-purple), var(--theme-cyan), var(--theme-purple));
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0 0 12px rgba(255, 255, 255, .25);
 }
-.search{display:flex;gap:10px;align-items:center}
-.input{
-  flex:1;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background: rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.16);
-  padding: 10px 12px;
+.container {
+  width: 100%;
+  max-width: 720px;
+  margin: -80px auto 40px auto; /* Margem negativa para sobrepor o banner */
+  position: relative;
+  z-index: 10;
+  background-color: var(--surface-white);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  letter-spacing: .5px;
+  color: var(--theme-cyan);
+}
+.container > p {
+  margin: 0 auto 32px auto;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  max-width: 450px;
+}
+.search-box {
+  margin-bottom: 16px;
+}
+.search-input {
+  width: 100%;
+  background: var(--bg-light);
+  border: 1px solid var(--border-light);
+  padding: 16px 20px;
   border-radius: 14px;
-  transition:.2s ease;
+  transition: .2s ease;
+  color: var(--text-dark);
+  font-size: 1.1rem;
+  text-align: center;
+  outline: none;
 }
-.input:focus-within{border-color:var(--accent); box-shadow:0 0 0 4px var(--ring)}
-.input input{
-  width:100%;
-  background:transparent;
-  border:0;
-  outline:none;
-  color:var(--text);
-  font-size:1rem;
+.search-input::placeholder { color: var(--text-muted); }
+.search-input:focus {
+  border-color: var(--theme-purple);
+  box-shadow: 0 0 0 4px rgba(153, 51, 234, 0.2);
 }
-.btn{
-  border:0;
-  cursor:pointer;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-weight:600;
-  color:#0c0c16;
-  background: linear-gradient(135deg, #a78bfa, #22d3ee);
-  box-shadow: 0 10px 25px rgba(34,211,238,.35);
-  transition: transform .08s ease;
+.prompt {
+  color: var(--text-muted);
+  font-size: .9rem;
 }
-.btn:active{ transform: translateY(1px) }
-.shortcuts{margin-top:10px; font-size:.9rem; color:var(--muted)}
-.grid{display:grid; grid-template-columns: 1fr; gap:12px; margin-top:16px}
-@media(min-width:700px){ .grid{grid-template-columns: 1fr 1fr} }
-.result{
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:16px;
-  padding:16px;
-  background: rgba(255,255,255,.05);
+.prompt kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #E9ECEF;
+  border: 1px solid #CED4DA;
+  color: var(--text-dark);
+  font-family: inherit;
+  font-size: .85rem;
 }
-.result h3{margin:0 0 6px 0; font-size:1.1rem}
-.kv{ display:grid; grid-template-columns: 140px 1fr; gap:10px; align-items:center; }
-.kv div:first-child{ color:var(--muted) }
-.badge{display:inline-block; padding:6px 10px; border-radius:999px; background:rgba(124,58,237,.2); border:1px solid rgba(124,58,237,.35)}
-.helper{margin-top:20px;color:var(--muted);font-size:.95rem}
-.footer{margin-top:36px;color:var(--muted);font-size:.9rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-hr.sep{border:0;border-top:1px dashed rgba(255,255,255,.2); margin:18px 0}
-.table-wrap{overflow:auto; border:1px solid rgba(255,255,255,.12); border-radius:14px}
-table{width:100%;border-collapse:collapse;min-width:520px}
-th,td{padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.1)}
-th{text-align:left; color:var(--muted); font-weight:600; position:sticky; top:0; background:rgba(11,16,32,.85); backdrop-filter: blur(6px);}
-tbody tr:hover{background:rgba(255,255,255,.04)}
-.empty{border:1px dashed rgba(255,255,255,.25); border-radius:12px; padding:14px; text-align:center; color:var(--muted)}
-.suggests{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px }
-.suggests button{
-  background: rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.16);
-  color: var(--text);
+.result-card {
+  display: none;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 32px;
+  text-align: left;
+}
+.result-card h3 {
+  margin: 0 0 18px;
+  font-size: 1.1rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.kv {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 12px;
+  align-items: center;
+  font-size: 1.1rem;
+  padding: 8px 0;
+}
+.kv div:first-child { color: var(--text-muted); }
+.toggle-list { margin: 32px 0; }
+.toggle-btn {
+  background: var(--theme-cyan); /* Cor turquesa/ciano no botão */
+  color: var(--surface-white);
+  border: none;
+  padding: 14px 32px;
   border-radius: 999px;
-  padding: 6px 10px;
+  font-weight: 700;
+  text-transform: uppercase;
   cursor: pointer;
+  transition: all .2s ease;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);
 }
+.toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(34, 211, 238, 0.4);
+}
+#tableContainer { display: none; }
+#tableContainer h2 {
+  font-size: 1.4rem;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+.table-wrap {
+  overflow: auto;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+th, td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-light);
+  text-align: left;
+}
+th {
+  color: var(--text-muted);
+  font-weight: 600;
+  background: var(--bg-light);
+}
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover { background-color: #F8F9FA; }
 </style>
 </head>
 <body>
-  <div class="container">
-    <header class="header">
-      <div class="logo" aria-hidden="true"></div>
-      <div class="hgroup">
-        <h1>Consulta de Unidade</h1>
-        <p>Digite o <strong>número</strong> para ver o nome da unidade e o <strong>consultor responsável</strong>.</p>
-      </div>
-    </header>
 
-    <section class="card">
-      <div class="search">
-        <div class="input">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/></svg>
-          <input id="unitInput" inputmode="numeric" autocomplete="off" placeholder="Ex.: 49" />
-        </div>
-        <button class="btn" id="btnSearch">Buscar</button>
-      </div>
-      <div class="shortcuts">Dica: pressione <span class="badge">Enter</span> para buscar • <span class="badge">ESC</span> para limpar.</div>
+  <header class="top-banner">
+    <div class="logo" aria-hidden="true"></div>
+  </header>
 
-      <div class="suggests" id="suggests" aria-live="polite"></div>
+  <main class="container">
+    <h1>CONSULTA DE UNIDADES</h1>
+    <p>Digite o código ou nome da unidade para visualizar os detalhes.</p>
 
-      <div class="grid">
-        <div id="resultBox" class="result" role="status" aria-live="polite" aria-atomic="true">
-          <h3>Resultado</h3>
-          <div class="kv"><div>Número:</div><div id="outNumero">—</div></div>
-          <div class="kv"><div>Unidade:</div><div id="outUnidade">—</div></div>
-          <div class="kv"><div>Consultor:</div><div id="outConsultor">—</div></div>
-        </div>
-        <div class="helper">
-          <p>Comece digitando o número da unidade. Assim que encontrar, os dados aparecem ao lado. Se preferir, confira a lista completa abaixo.</p>
-        </div>
-      </div>
-
-      <hr class="sep"/>
-
-      <details>
-        <summary>Ver lista completa (76 unidades)</summary>
-        <div class="table-wrap" style="margin-top:12px">
-          <table>
-            <thead><tr><th>Número</th><th>Unidade</th><th>Consultor</th></tr></thead>
-            <tbody id="tableBody"></tbody>
-          </table>
-        </div>
-      </details>
+    <section class="search-box">
+      <input id="unitInput" list="unitSuggestions" autocomplete="off" placeholder="Buscar por código ou nome..." class="search-input" />
+      <datalist id="unitSuggestions"></datalist>
+      <p class="prompt">Pressione <kbd>Enter</kbd> para buscar ou <kbd>Esc</kbd> para limpar.</p>
+      <button id="clearButton" class="toggle-btn" style="margin-top: 10px; background-color: var(--theme-purple); box-shadow: 0 4px 15px rgba(153, 51, 234, 0.3);">LIMPAR</button>
     </section>
 
-    <div class="footer">
-      <div>Feito com carinho para o time da Ultra 💜</div>
-      <div>Arquivo estático (pode abrir direto no navegador ou publicar em qualquer hospedagem).</div>
+    <section id="resultCard" class="result-card" role="status" aria-live="polite" aria-atomic="true">
+      <h3 id="resultTitle">UNIDADE ENCONTRADA</h3>
+      <div class="kv"><div>CÓDIGO:</div><div id="outNumero">—</div></div>
+      <div class="kv"><div>UNIDADE:</div><div id="outUnidade">—</div></div>
+      <div class="kv"><div>CONSULTOR:</div><div id="outConsultor">—</div></div>
+    </section>
+
+    <div class="toggle-list">
+      <button id="toggleButton" class="toggle-btn">VER TODAS AS UNIDADES</button>
     </div>
-  </div>
+
+    <section id="tableContainer">
+      <h2>LISTA DE UNIDADES</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>CÓDIGO</th><th>UNIDADE</th><th>CONSULTOR</th></tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
 <script>
-const DATA = [{"numero":"1","unidade":"AUGUSTA","consultor":"GUILHERME"},{"numero":"2","unidade":"JUNDIAI","consultor":"JOSI"},{"numero":"3","unidade":"BERRINI","consultor":"GUILHERME"},{"numero":"4","unidade":"BARRA FUNDA","consultor":""},{"numero":"5","unidade":"MOOCA","consultor":"GUILHERME"},{"numero":"6","unidade":"ACLIMAÇÃO","consultor":"GUILHERME"},{"numero":"7","unidade":"VILA MARIANA","consultor":"GUILHERME"},{"numero":"8","unidade":"PLAZA SUL","consultor":"GUILHERME"},{"numero":"9","unidade":"SANTOS","consultor":"ANDERSON"},{"numero":"10","unidade":"JARDIM BOTANICO","consultor":"ANDERSON"},{"numero":"15","unidade":"ASA NORTE","consultor":"ANDERSON"},{"numero":"16","unidade":"LAGO SUL","consultor":"ANDERSON"},{"numero":"17","unidade":"TAUBATE","consultor":"ANDERSON"},{"numero":"18","unidade":"VILA GUILHERME","consultor":"GUILHERME"},{"numero":"19","unidade":"GUARUJA","consultor":"ANDERSON"},{"numero":"20","unidade":"BRASILANDIA","consultor":"GUILHERME"},{"numero":"21","unidade":"CAMPO LIMPO","consultor":"GUILHERME"},{"numero":"22","unidade":"SETOR OESTE","consultor":"ANDERSON"},{"numero":"23","unidade":"CRUZEIRO","consultor":"ANDERSON"},{"numero":"24","unidade":"ÁGUAS CLARAS","consultor":"ANDERSON"},{"numero":"26","unidade":"CENTRO COMENDADOR","consultor":"JOSI"},{"numero":"27","unidade":"SOBRADINHO","consultor":"ANDERSON"},{"numero":"28","unidade":"SORRISO","consultor":"JOSI"},{"numero":"29","unidade":"CABO FRIO","consultor":"GUILHERME"},{"numero":"30","unidade":"CEILANDIA","consultor":"ANDERSON"},{"numero":"31","unidade":"VILA MATILDE","consultor":"GUILHERME"},{"numero":"32","unidade":"ARAPOANGA PLANALTINA","consultor":"ANDERSON"},{"numero":"33","unidade":"ALEXANDRINA","consultor":"ANDERSON"},{"numero":"34","unidade":"SERRA","consultor":"JOSI"},{"numero":"35","unidade":"PRAIA GRANDE","consultor":"GUILHERME"},{"numero":"36","unidade":"CEILANDIA SUL","consultor":"ANDERSON"},{"numero":"37","unidade":"SAMAMBAIA","consultor":"ANDERSON"},{"numero":"38","unidade":"RECANTO DAS EMAS","consultor":"ANDERSON"},{"numero":"39","unidade":"LAGO NORTE","consultor":"ANDERSON"},{"numero":"40","unidade":"CARAPICUIBA","consultor":"GUILHERME"},{"numero":"41","unidade":"TAGUATINGA","consultor":"ANDERSON"},{"numero":"42","unidade":"CAMPO LARGO","consultor":"JOSI"},{"numero":"43","unidade":"SANTA MARIA","consultor":"ANDERSON"},{"numero":"45","unidade":"POA BARRA SUL","consultor":"JOSI"},{"numero":"46","unidade":"BOA VISTA","consultor":"JOSI"},{"numero":"47","unidade":"SUZANO","consultor":"JOSI"},{"numero":"48","unidade":"VICENTE PIRES","consultor":"ANDERSON"},{"numero":"49","unidade":"JARDIM APURA","consultor":"ANDERSON"},{"numero":"50","unidade":"ÁGUAS LINDAS","consultor":"ANDERSON"},{"numero":"54","unidade":"COTIA","consultor":"ANDERSON"},{"numero":"55","unidade":"PARANOA PARQUE","consultor":"ANDERSON"},{"numero":"57","unidade":"NOROESTE","consultor":"ANDERSON"},{"numero":"58","unidade":"MOCOCA","consultor":"JOSI"},{"numero":"59","unidade":"VALPARAISO","consultor":"ANDERSON"},{"numero":"60","unidade":"CAMBUI","consultor":"JOSI"},{"numero":"61","unidade":"CEILÂNDIA QNM33","consultor":"ANDERSON"},{"numero":"62","unidade":"CUIABA CPA","consultor":"JOSI"},{"numero":"63","unidade":"CENTER SHOPPING","consultor":"ULTRA 90"},{"numero":"64","unidade":"BOTAFOGO","consultor":"GUILHERME"},{"numero":"65","unidade":"CESARIO","consultor":"JOSI"},{"numero":"66","unidade":"ICARAÍ","consultor":"ULTRA 90"},{"numero":"67","unidade":"PIÇARRAS","consultor":"ULTRA 90"},{"numero":"68","unidade":"CARIACICA","consultor":"JOSI"},{"numero":"69","unidade":"VILA GUANABARA","consultor":"JOSI"},{"numero":"70","unidade":"BANGU","consultor":"GUILHERME"},{"numero":"71","unidade":"UNAI","consultor":"ANDERSON"},{"numero":"72","unidade":"FLORIANO","consultor":"JOSI"},{"numero":"73","unidade":"BURITIS","consultor":"ULTRA 90"},{"numero":"74","unidade":"BOTANIC MALL","consultor":"ANDERSON"},{"numero":"75","unidade":"TAGUATINGA SUL","consultor":"ANDERSON"},{"numero":"76","unidade":"FLOW","consultor":"ULTRA 90"},{"numero":"77","unidade":"GUARAPARI","consultor":"ULTRA 90"},{"numero":"78","unidade":"BERTIOGA","consultor":"ULTRA 90"},{"numero":"79","unidade":"AMERICANA CENTRO","consultor":"ULTRA 90"},{"numero":"80","unidade":"ANDRÉ DE BARROS","consultor":"ULTRA 90"},{"numero":"81","unidade":"BUTANTÃ","consultor":"ANDERSON"},{"numero":"82","unidade":"PÁTIO BRASIL","consultor":"ULTRA 90"},{"numero":"83","unidade":"SANTO ALBANO","consultor":"ULTRA 90"},{"numero":"84","unidade":"SAGRADA FAMILIA","consultor":"ULTRA 90"},{"numero":"85","unidade":"VILLA BRANCA","consultor":"ULTRA 90"},{"numero":"86","unidade":"SÃO GONÇALO SHOPPING","consultor":"ULTRA 90"}];
+const DATA = [{"numero":"1","unidade":"AUGUSTA","consultor":"GUILHERME"},{"numero":"2","unidade":"JUNDIAI","consultor":"GUILHERME"},{"numero":"3","unidade":"BERRINI","consultor":"GUILHERME"},{"numero":"4","unidade":"BARRA FUNDA","consultor":"GUILHERME"},{"numero":"5","unidade":"MOOCA","consultor":"GUILHERME"},{"numero":"6","unidade":"ACLIMAÇÃO","consultor":"GUILHERME"},{"numero":"7","unidade":"VILA MARIANA","consultor":"GUILHERME"},{"numero":"8","unidade":"PLAZA SUL","consultor":"GUILHERME"},{"numero":"9","unidade":"SANTOS","consultor":"ANDERSON"},{"numero":"10","unidade":"JARDIM BOTANICO","consultor":"ANDERSON"},{"numero":"15","unidade":"ASA NORTE","consultor":"ANDERSON"},{"numero":"16","unidade":"LAGO SUL","consultor":"ANDERSON"},{"numero":"17","unidade":"TAUBATE","consultor":"ANDERSON"},{"numero":"18","unidade":"VILA GUILHERME","consultor":"GUILHERME"},{"numero":"19","unidade":"GUARUJA","consultor":"ANDERSON"},{"numero":"20","unidade":"BRASILANDIA","consultor":"GUILHERME"},{"numero":"21","unidade":"CAMPO LIMPO","consultor":"GUILHERME"},{"numero":"22","unidade":"SETOR OESTE","consultor":"ANDERSON"},{"numero":"23","unidade":"CRUZEIRO","consultor":"ANDERSON"},{"numero":"24","unidade":"ÁGUAS CLARAS","consultor":"ANDERSON"},{"numero":"26","unidade":"CENTRO COMENDADOR","consultor":"GUILHERME"},{"numero":"27","unidade":"SOBRADINHO","consultor":"ANDERSON"},{"numero":"28","unidade":"SORRISO","consultor":"GUILHERME"},{"numero":"29","unidade":"CABO FRIO","consultor":"GUILHERME"},{"numero":"30","unidade":"CEILANDIA","consultor":"ANDERSON"},{"numero":"31","unidade":"VILA MATILDE","consultor":"GUILHERME"},{"numero":"32","unidade":"ARAPOANGA PLANALTINA","consultor":"ANDERSON"},{"numero":"33","unidade":"ALEXANDRINA","consultor":"ANDERSON"},{"numero":"34","unidade":"SERRA","consultor":"ANDERSON"},{"numero":"35","unidade":"PRAIA GRANDE","consultor":"GUILHERME"},{"numero":"36","unidade":"CEILANDIA SUL","consultor":"ANDERSON"},{"numero":"37","unidade":"SAMAMBAIA","consultor":"ANDERSON"},{"numero":"38","unidade":"RECANTO DAS EMAS","consultor":"ANDERSON"},{"numero":"39","unidade":"LAGO NORTE","consultor":"ANDERSON"},{"numero":"40","unidade":"CARAPICUIBA","consultor":"GUILHERME"},{"numero":"41","unidade":"TAGUATINGA","consultor":"ANDERSON"},{"numero":"42","unidade":"CAMPO LARGO","consultor":"GUILHERME"},{"numero":"43","unidade":"SANTA MARIA","consultor":"ANDERSON"},{"numero":"45","unidade":"POA BARRA SUL","consultor":"GUILHERME"},{"numero":"46","unidade":"BOA VISTA","consultor":"GUILHERME"},{"numero":"47","unidade":"SUZANO","consultor":"GUILHERME"},{"numero":"48","unidade":"VICENTE PIRES","consultor":"ANDERSON"},{"numero":"49","unidade":"JARDIM APURA","consultor":"ANDERSON"},{"numero":"50","unidade":"ÁGUAS LINDAS","consultor":"ANDERSON"},{"numero":"54","unidade":"COTIA","consultor":"ANDERSON"},{"numero":"55","unidade":"PARANOA PARQUE","consultor":"ANDERSON"},{"numero":"57","unidade":"NOROESTE","consultor":"ANDERSON"},{"numero":"58","unidade":"MOCOCA","consultor":"GUILHERME"},{"numero":"59","unidade":"VALPARAISO","consultor":"ANDERSON"},{"numero":"60","unidade":"CAMBUI","consultor":"GUILHERME"},{"numero":"61","unidade":"CEILÂNDIA QNM33","consultor":"ANDERSON"},{"numero":"62","unidade":"CUIABA CPA","consultor":"GUILHERME"},{"numero":"63","unidade":"CENTER SHOPPING","consultor":"ULTRA 90"},{"numero":"64","unidade":"BOTAFOGO","consultor":"GUILHERME"},{"numero":"65","unidade":"CESARIO","consultor":"ANDERSON"},{"numero":"66","unidade":"ICARAÍ","consultor":"ULTRA 90"},{"numero":"67","unidade":"PIÇARRAS","consultor":"ULTRA 90"},{"numero":"68","unidade":"CARIACICA","consultor":"ANDERSON"},{"numero":"69","unidade":"VILA GUANABARA","consultor":"GUILHERME"},{"numero":"70","unidade":"BANGU","consultor":"GUILHERME"},{"numero":"71","unidade":"UNAI","consultor":"ANDERSON"},{"numero":"72","unidade":"FLORIANO","consultor":"ANDERSON"},{"numero":"73","unidade":"BURITIS","consultor":"ULTRA 90"},{"numero":"74","unidade":"BOTANIC MALL","consultor":"ANDERSON"},{"numero":"75","unidade":"TAGUATINGA SUL","consultor":"ANDERSON"},{"numero":"76","unidade":"FLOW","consultor":"ULTRA 90"},{"numero":"77","unidade":"GUARAPARI","consultor":"ULTRA 90"},{"numero":"78","unidade":"BERTIOGA","consultor":"ULTRA 90"},{"numero":"79","unidade":"AMERICANA CENTRO","consultor":"ULTRA 90"},{"numero":"80","unidade":"ANDRÉ DE BARROS","consultor":"ULTRA 90"},{"numero":"81","unidade":"BUTANTÃ","consultor":"ANDERSON"},{"numero":"82","unidade":"PÁTIO BRASIL","consultor":"ULTRA 90"},{"numero":"83","unidade":"SANTO ALBANO","consultor":"ULTRA 90"},{"numero":"84","unidade":"SAGRADA FAMILIA","consultor":"ULTRA 90"},{"numero":"85","unidade":"VILLA BRANCA","consultor":"ULTRA 90"},{"numero":"86","unidade":"SÃO GONÇALO SHOPPING","consultor":"ULTRA 90"}];
 
-// Build index map for quick lookup
-const index = new Map();
-for (const r of DATA) index.set(String(r.numero), r);
-
-// Populate table
-const tbody = document.getElementById('tableBody');
-for (const r of DATA) {
-  const tr = document.createElement('tr');
-  const td1 = document.createElement('td'); td1.textContent = r.numero || '';
-  const td2 = document.createElement('td'); td2.textContent = r.unidade || '';
-  const td3 = document.createElement('td'); td3.textContent = r.consultor || '';
-  tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
-  tbody.appendChild(tr);
-}
-
-// UI elements
-const $in = document.getElementById('unitInput');
-const $btn = document.getElementById('btnSearch');
-const $outN = document.getElementById('outNumero');
-const $outU = document.getElementById('outUnidade');
-const $outC = document.getElementById('outConsultor');
-const $sug = document.getElementById('suggests');
-
-function onlyDigits(s) { return (s||'').replace(/\D+/g,''); }
-
-function showRecord(r, numeroInput) {
-  $outN.textContent = numeroInput || (r && r.numero) || '—';
-  $outU.textContent = r ? (r.unidade || '—') : 'Não encontrado';
-  $outC.textContent = r ? (r.consultor || '—') : '—';
-}
-
-function search() {
-  const raw = $in.value.trim();
-  const numero = onlyDigits(raw).replace(/^0+/, '') || '0';
-  const rec = index.get(numero);
-  showRecord(rec, numero);
-}
-
-function refreshSuggests() {
-  const prefix = onlyDigits($in.value.trim());
-  $sug.innerHTML = '';
-  if (!prefix) return;
-  // top 8 matches that start with the digits typed
-  const matches = DATA.filter(r => String(r.numero).startsWith(prefix)).slice(0,8);
-  for (const r of matches) {
-    const b = document.createElement('button');
-    b.textContent = r.numero;
-    b.onclick = () => { $in.value = r.numero; search(); $in.focus(); };
-    $sug.appendChild(b);
+document.addEventListener('DOMContentLoaded', () => {
+  const byCode = new Map();
+  const byName = new Map();
+  for (const r of DATA) {
+    byCode.set(String(r.numero), r);
+    byName.set(r.unidade.toUpperCase(), r);
   }
-}
 
-$btn.addEventListener('click', search);
-$in.addEventListener('keydown', (e)=>{
-  if (e.key === 'Enter') search();
-  if (e.key === 'Escape') { $in.value=''; showRecord(null, ''); $sug.innerHTML=''; }
+  const $in = document.getElementById('unitInput');
+  const $suggestions = document.getElementById('unitSuggestions');
+  const $clearButton = document.getElementById('clearButton');
+  const $resultCard = document.getElementById('resultCard');
+  const $resultTitle = document.getElementById('resultTitle');
+  const $outN = document.getElementById('outNumero');
+  const $outU = document.getElementById('outUnidade');
+  const $outC = document.getElementById('outConsultor');
+  const $toggleBtn = document.getElementById('toggleButton');
+  const $tableContainer = document.getElementById('tableContainer');
+  const $tbody = document.getElementById('tableBody');
+
+  for (const r of DATA) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.numero || ''}</td><td>${r.unidade || ''}</td><td>${r.consultor || ''}</td>`;
+    $tbody.appendChild(tr);
+    const option = document.createElement('option');
+    option.value = r.unidade;
+    $suggestions.appendChild(option);
+  }
+
+  function showRecord(r, inputValue) {
+    if (!r && !inputValue) {
+        $resultCard.style.display = 'none';
+        return;
+    }
+    $resultCard.style.display = 'block';
+    $outN.textContent = (r && r.numero) || '—';
+    if (r) {
+        $resultTitle.textContent = 'UNIDADE ENCONTRADA';
+        $outU.textContent = r.unidade || '—';
+        $outC.textContent = r.consultor || '—';
+    } else {
+        $resultTitle.textContent = 'NÃO ENCONTRADA';
+        $outU.textContent = `Verifique o código ou nome digitado: ${inputValue}`;
+        $outC.textContent = '—';
+    }
+  }
+
+  function search() {
+    const raw = $in.value.trim().toUpperCase();
+    if (!raw) {
+        showRecord(null, '');
+        return;
+    };
+    let rec = byCode.get(raw.replace(/\D+/g, '').replace(/^0+/, '') || '0');
+    if (!rec) {
+      rec = byName.get(raw);
+    }
+    showRecord(rec, $in.value.trim());
+  }
+  
+  function clearSearch() {
+    $in.value = '';
+    showRecord(null, '');
+  }
+
+  $in.addEventListener('input', search);
+  $in.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') search();
+    if (e.key === 'Escape') clearSearch();
+  });
+
+  $clearButton.addEventListener('click', clearSearch);
+
+  $toggleBtn.addEventListener('click', () => {
+    const isVisible = $tableContainer.style.display === 'block';
+    $tableContainer.style.display = isVisible ? 'none' : 'block';
+    $toggleBtn.textContent = isVisible ? 'VER TODAS AS UNIDADES' : 'OCULTAR LISTA';
+  });
 });
-$in.addEventListener('input', refreshSuggests);
-
-// Initialize
-showRecord(null, '');
 </script>
 </body>
 </html>
