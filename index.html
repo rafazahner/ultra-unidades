@@ -351,27 +351,398 @@ tbody tr:hover { background-color: #F8F9FA; }
 <!-- SweetAlert2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-let DATA = [];
+// Dados embutidos em variável para eliminar dependência de unidades.json
+let DATA = 
+[
+  {
+    "numero": "1",
+    "unidade": "AUGUSTA",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "2",
+    "unidade": "JUNDIAI",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "3",
+    "unidade": "BERRINI",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "4",
+    "unidade": "BARRA FUNDA",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "5",
+    "unidade": "MOOCA",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "6",
+    "unidade": "ACLIMA��ǟO",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "7",
+    "unidade": "VILA MARIANA",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "8",
+    "unidade": "PLAZA SUL",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "9",
+    "unidade": "SANTOS",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "10",
+    "unidade": "JARDIM BOTANICO",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "15",
+    "unidade": "ASA NORTE",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "16",
+    "unidade": "LAGO SUL",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "17",
+    "unidade": "TAUBATE",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "18",
+    "unidade": "VILA GUILHERME",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "19",
+    "unidade": "GUARUJA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "20",
+    "unidade": "BRASILANDIA",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "21",
+    "unidade": "CAMPO LIMPO",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "22",
+    "unidade": "SETOR OESTE",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "23",
+    "unidade": "CRUZEIRO",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "24",
+    "unidade": "�?GUAS CLARAS",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "26",
+    "unidade": "CENTRO COMENDADOR",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "27",
+    "unidade": "SOBRADINHO",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "28",
+    "unidade": "SORRISO",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "29",
+    "unidade": "CABO FRIO",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "30",
+    "unidade": "CEILANDIA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "31",
+    "unidade": "VILA MATILDE",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "32",
+    "unidade": "ARAPOANGA PLANALTINA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "33",
+    "unidade": "ALEXANDRINA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "34",
+    "unidade": "SERRA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "35",
+    "unidade": "PRAIA GRANDE",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "36",
+    "unidade": "CEILANDIA SUL",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "37",
+    "unidade": "SAMAMBAIA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "38",
+    "unidade": "RECANTO DAS EMAS",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "39",
+    "unidade": "LAGO NORTE",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "40",
+    "unidade": "CARAPICUIBA",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "41",
+    "unidade": "TAGUATINGA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "42",
+    "unidade": "CAMPO LARGO",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "43",
+    "unidade": "SANTA MARIA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "45",
+    "unidade": "POA BARRA SUL",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "46",
+    "unidade": "BOA VISTA",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "47",
+    "unidade": "SUZANO",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "48",
+    "unidade": "VICENTE PIRES",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "49",
+    "unidade": "JARDIM APURA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "50",
+    "unidade": "�?GUAS LINDAS",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "54",
+    "unidade": "COTIA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "55",
+    "unidade": "PARANOA PARQUE",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "57",
+    "unidade": "NOROESTE",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "58",
+    "unidade": "MOCOCA",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "59",
+    "unidade": "VALPARAISO",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "60",
+    "unidade": "CAMBUI",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "61",
+    "unidade": "CEIL�'NDIA QNM33",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "62",
+    "unidade": "CUIABA CPA",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "63",
+    "unidade": "CENTER SHOPPING",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "64",
+    "unidade": "BOTAFOGO",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "65",
+    "unidade": "CESARIO",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "66",
+    "unidade": "ICARA�?",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "67",
+    "unidade": "PI��ARRAS",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "68",
+    "unidade": "CARIACICA",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "69",
+    "unidade": "VILA GUANABARA",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "70",
+    "unidade": "BANGU",
+    "consultor": "GUILHERME"
+  },
+  {
+    "numero": "71",
+    "unidade": "UNAI",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "72",
+    "unidade": "FLORIANO",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "73",
+    "unidade": "BURITIS",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "74",
+    "unidade": "BOTANIC MALL",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "75",
+    "unidade": "TAGUATINGA SUL",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "76",
+    "unidade": "FLOW",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "77",
+    "unidade": "GUARAPARI",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "78",
+    "unidade": "BERTIOGA",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "79",
+    "unidade": "AMERICANA CENTRO",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "80",
+    "unidade": "ANDR�% DE BARROS",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "81",
+    "unidade": "BUTANTǟ",
+    "consultor": "ANDERSON"
+  },
+  {
+    "numero": "82",
+    "unidade": "P�?TIO BRASIL",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "83",
+    "unidade": "SANTO ALBANO",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "84",
+    "unidade": "SAGRADA FAMILIA",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "85",
+    "unidade": "VILLA BRANCA",
+    "consultor": "ULTRA 90"
+  },
+  {
+    "numero": "86",
+    "unidade": "SǟO GON��ALO SHOPPING",
+    "consultor": "ULTRA 90"
+  }
+]
+;
+
 let tempEditorData = [];
 const CONSULTANTS = ['GUILHERME', 'ANDERSON', 'ULTRA 90'];
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Fetch data from the external JSON file
-  fetch('unidades.json')
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(jsonData => {
-      DATA = jsonData;
-      initializeApp();
-    })
-    .catch(e => {
-      console.error('Error loading or parsing unidades.json:', e);
-      Swal.fire('Erro Crítico', 'Não foi possível carregar o banco de dados de unidades (unidades.json). Verifique se o arquivo existe e está no formato JSON correto.', 'error');
-    });
+  // Dados já estão carregados na variável DATA
+  initializeApp();
 });
 
 function initializeApp() {
