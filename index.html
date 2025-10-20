@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Consulta de Unidades • Ultra</title>
 <meta name="description" content="Digite o código da unidade para visualizar os detalhes." />
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <style>
 :root {
-  /* Nova paleta de cores baseada na descrição */
   --theme-orange: #FF7700;
   --theme-purple: #9933EA;
   --theme-cyan: #22D3EE;
@@ -16,6 +17,7 @@
   --text-dark: #212529;
   --text-muted: #6C757D;
   --border-light: #DEE2E6;
+  --danger-red: #dc3545;
 }
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -43,7 +45,7 @@ body {
 .container {
   width: 100%;
   max-width: 720px;
-  margin: -80px auto 40px auto; /* Margem negativa para sobrepor o banner */
+  margin: -80px auto 40px auto;
   position: relative;
   z-index: 10;
   background-color: var(--surface-white);
@@ -64,9 +66,7 @@ h1 {
   font-size: 1.1rem;
   max-width: 450px;
 }
-.search-box {
-  margin-bottom: 16px;
-}
+.search-box { margin-bottom: 16px; }
 .search-input {
   width: 100%;
   background: var(--bg-light);
@@ -126,7 +126,7 @@ h1 {
 .kv div:first-child { color: var(--text-muted); }
 .toggle-list { margin: 32px 0; }
 .toggle-btn {
-  background: var(--theme-cyan); /* Cor turquesa/ciano no botão */
+  background: var(--theme-cyan);
   color: var(--surface-white);
   border: none;
   padding: 14px 32px;
@@ -171,6 +171,117 @@ th {
 }
 tbody tr:last-child td { border-bottom: 0; }
 tbody tr:hover { background-color: #F8F9FA; }
+
+/* Editor Modal Styles */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background-color: var(--surface-white);
+  margin: auto;
+  padding: 24px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal-content h2 {
+  margin: 0 0 24px;
+  text-align: center;
+  color: var(--theme-purple);
+}
+.editor-list-container {
+  overflow-y: auto;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+.editor-list-item {
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr 100px;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+.editor-list-item:last-child { border-bottom: none; }
+.editor-list-item span {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.editor-list-item input, .editor-list-item select {
+  font-size: 1rem;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+  width: 100%;
+}
+.delete-btn {
+  background: var(--danger-red);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: .8rem;
+  font-weight: 600;
+}
+.editor-add-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 120px;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.editor-add-form input, .editor-add-form select {
+  font-size: 1rem;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+}
+.editor-add-form button {
+  background: var(--theme-purple);
+  color: white;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.modal-actions button {
+  padding: 12px 24px;
+  font-size: .9rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+}
+#saveAndCloseEditorBtn {
+  background-color: var(--theme-cyan);
+  color: white;
+}
+#cancelEditorBtn {
+  background-color: var(--border-light);
+}
+#saveToFileBtn {
+  background-color: var(--theme-orange);
+  color: white;
+}
 </style>
 </head>
 <body>
@@ -184,7 +295,7 @@ tbody tr:hover { background-color: #F8F9FA; }
     <p>Digite o código ou nome da unidade para visualizar os detalhes.</p>
 
     <section class="search-box">
-      <input id="unitInput" list="unitSuggestions" autocomplete="off" placeholder="Buscar por código ou nome..." class="search-input" />
+      <input id="unitInput" list="unitSuggestions" autocomplete="off" placeholder="Buscando dados..." class="search-input" disabled />
       <datalist id="unitSuggestions"></datalist>
       <p class="prompt">Pressione <kbd>Enter</kbd> para buscar ou <kbd>Esc</kbd> para limpar.</p>
       <button id="clearButton" class="toggle-btn" style="margin-top: 10px; background-color: var(--theme-purple); box-shadow: 0 4px 15px rgba(153, 51, 234, 0.3);">LIMPAR</button>
@@ -199,6 +310,7 @@ tbody tr:hover { background-color: #F8F9FA; }
 
     <div class="toggle-list">
       <button id="toggleButton" class="toggle-btn">VER TODAS AS UNIDADES</button>
+      <button id="cadastrarUnidadeBtn" class="toggle-btn" style="margin-left: 10px; background-color: var(--theme-purple); box-shadow: 0 4px 15px rgba(153, 51, 234, 0.3);">GERENCIAR UNIDADES</button>
     </div>
 
     <section id="tableContainer">
@@ -214,17 +326,60 @@ tbody tr:hover { background-color: #F8F9FA; }
     </section>
   </main>
 
+  <!-- Editor Modal -->
+  <div id="editorModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Gerenciar Unidades</h2>
+      
+      <div class="editor-add-form">
+        <input id="newUnidadeInput" placeholder="Nome da Unidade" />
+        <select id="newConsultorSelect"></select>
+        <button id="addUnitBtn">Incluir</button>
+      </div>
+      
+
+      <div id="editorListContainer" class="editor-list-container">
+        <!-- Items will be populated by JS -->
+      </div>
+
+      <div class="modal-actions">
+        <button id="cancelEditorBtn">Cancelar</button>
+        <button id="saveAndCloseEditorBtn">Aplicar e Fechar</button>
+        <button id="saveToFileBtn">Salvar Alterações no Arquivo</button>
+      </div>
+    </div>
+  </div>
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-const DATA = [{"numero":"1","unidade":"AUGUSTA","consultor":"GUILHERME"},{"numero":"2","unidade":"JUNDIAI","consultor":"GUILHERME"},{"numero":"3","unidade":"BERRINI","consultor":"GUILHERME"},{"numero":"4","unidade":"BARRA FUNDA","consultor":"GUILHERME"},{"numero":"5","unidade":"MOOCA","consultor":"GUILHERME"},{"numero":"6","unidade":"ACLIMAÇÃO","consultor":"GUILHERME"},{"numero":"7","unidade":"VILA MARIANA","consultor":"GUILHERME"},{"numero":"8","unidade":"PLAZA SUL","consultor":"GUILHERME"},{"numero":"9","unidade":"SANTOS","consultor":"ANDERSON"},{"numero":"10","unidade":"JARDIM BOTANICO","consultor":"ANDERSON"},{"numero":"15","unidade":"ASA NORTE","consultor":"ANDERSON"},{"numero":"16","unidade":"LAGO SUL","consultor":"ANDERSON"},{"numero":"17","unidade":"TAUBATE","consultor":"ANDERSON"},{"numero":"18","unidade":"VILA GUILHERME","consultor":"GUILHERME"},{"numero":"19","unidade":"GUARUJA","consultor":"ANDERSON"},{"numero":"20","unidade":"BRASILANDIA","consultor":"GUILHERME"},{"numero":"21","unidade":"CAMPO LIMPO","consultor":"GUILHERME"},{"numero":"22","unidade":"SETOR OESTE","consultor":"ANDERSON"},{"numero":"23","unidade":"CRUZEIRO","consultor":"ANDERSON"},{"numero":"24","unidade":"ÁGUAS CLARAS","consultor":"ANDERSON"},{"numero":"26","unidade":"CENTRO COMENDADOR","consultor":"GUILHERME"},{"numero":"27","unidade":"SOBRADINHO","consultor":"ANDERSON"},{"numero":"28","unidade":"SORRISO","consultor":"GUILHERME"},{"numero":"29","unidade":"CABO FRIO","consultor":"GUILHERME"},{"numero":"30","unidade":"CEILANDIA","consultor":"ANDERSON"},{"numero":"31","unidade":"VILA MATILDE","consultor":"GUILHERME"},{"numero":"32","unidade":"ARAPOANGA PLANALTINA","consultor":"ANDERSON"},{"numero":"33","unidade":"ALEXANDRINA","consultor":"ANDERSON"},{"numero":"34","unidade":"SERRA","consultor":"ANDERSON"},{"numero":"35","unidade":"PRAIA GRANDE","consultor":"GUILHERME"},{"numero":"36","unidade":"CEILANDIA SUL","consultor":"ANDERSON"},{"numero":"37","unidade":"SAMAMBAIA","consultor":"ANDERSON"},{"numero":"38","unidade":"RECANTO DAS EMAS","consultor":"ANDERSON"},{"numero":"39","unidade":"LAGO NORTE","consultor":"ANDERSON"},{"numero":"40","unidade":"CARAPICUIBA","consultor":"GUILHERME"},{"numero":"41","unidade":"TAGUATINGA","consultor":"ANDERSON"},{"numero":"42","unidade":"CAMPO LARGO","consultor":"GUILHERME"},{"numero":"43","unidade":"SANTA MARIA","consultor":"ANDERSON"},{"numero":"45","unidade":"POA BARRA SUL","consultor":"GUILHERME"},{"numero":"46","unidade":"BOA VISTA","consultor":"GUILHERME"},{"numero":"47","unidade":"SUZANO","consultor":"GUILHERME"},{"numero":"48","unidade":"VICENTE PIRES","consultor":"ANDERSON"},{"numero":"49","unidade":"JARDIM APURA","consultor":"ANDERSON"},{"numero":"50","unidade":"ÁGUAS LINDAS","consultor":"ANDERSON"},{"numero":"54","unidade":"COTIA","consultor":"ANDERSON"},{"numero":"55","unidade":"PARANOA PARQUE","consultor":"ANDERSON"},{"numero":"57","unidade":"NOROESTE","consultor":"ANDERSON"},{"numero":"58","unidade":"MOCOCA","consultor":"GUILHERME"},{"numero":"59","unidade":"VALPARAISO","consultor":"ANDERSON"},{"numero":"60","unidade":"CAMBUI","consultor":"GUILHERME"},{"numero":"61","unidade":"CEILÂNDIA QNM33","consultor":"ANDERSON"},{"numero":"62","unidade":"CUIABA CPA","consultor":"GUILHERME"},{"numero":"63","unidade":"CENTER SHOPPING","consultor":"ULTRA 90"},{"numero":"64","unidade":"BOTAFOGO","consultor":"GUILHERME"},{"numero":"65","unidade":"CESARIO","consultor":"ANDERSON"},{"numero":"66","unidade":"ICARAÍ","consultor":"ULTRA 90"},{"numero":"67","unidade":"PIÇARRAS","consultor":"ULTRA 90"},{"numero":"68","unidade":"CARIACICA","consultor":"ANDERSON"},{"numero":"69","unidade":"VILA GUANABARA","consultor":"GUILHERME"},{"numero":"70","unidade":"BANGU","consultor":"GUILHERME"},{"numero":"71","unidade":"UNAI","consultor":"ANDERSON"},{"numero":"72","unidade":"FLORIANO","consultor":"ANDERSON"},{"numero":"73","unidade":"BURITIS","consultor":"ULTRA 90"},{"numero":"74","unidade":"BOTANIC MALL","consultor":"ANDERSON"},{"numero":"75","unidade":"TAGUATINGA SUL","consultor":"ANDERSON"},{"numero":"76","unidade":"FLOW","consultor":"ULTRA 90"},{"numero":"77","unidade":"GUARAPARI","consultor":"ULTRA 90"},{"numero":"78","unidade":"BERTIOGA","consultor":"ULTRA 90"},{"numero":"79","unidade":"AMERICANA CENTRO","consultor":"ULTRA 90"},{"numero":"80","unidade":"ANDRÉ DE BARROS","consultor":"ULTRA 90"},{"numero":"81","unidade":"BUTANTÃ","consultor":"ANDERSON"},{"numero":"82","unidade":"PÁTIO BRASIL","consultor":"ULTRA 90"},{"numero":"83","unidade":"SANTO ALBANO","consultor":"ULTRA 90"},{"numero":"84","unidade":"SAGRADA FAMILIA","consultor":"ULTRA 90"},{"numero":"85","unidade":"VILLA BRANCA","consultor":"ULTRA 90"},{"numero":"86","unidade":"SÃO GONÇALO SHOPPING","consultor":"ULTRA 90"}];
+let DATA = [];
+let tempEditorData = [];
+const CONSULTANTS = ['GUILHERME', 'ANDERSON', 'ULTRA 90'];
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Fetch data from the external JSON file
+  fetch('unidades.json')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(jsonData => {
+      DATA = jsonData;
+      initializeApp();
+    })
+    .catch(e => {
+      console.error('Error loading or parsing unidades.json:', e);
+      Swal.fire('Erro Crítico', 'Não foi possível carregar o banco de dados de unidades (unidades.json). Verifique se o arquivo existe e está no formato JSON correto.', 'error');
+    });
+});
+
+function initializeApp() {
+  // Main Page Elements
   const byCode = new Map();
   const byName = new Map();
-  for (const r of DATA) {
-    byCode.set(String(r.numero), r);
-    byName.set(r.unidade.toUpperCase(), r);
-  }
-
   const $in = document.getElementById('unitInput');
   const $suggestions = document.getElementById('unitSuggestions');
   const $clearButton = document.getElementById('clearButton');
@@ -236,21 +391,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const $toggleBtn = document.getElementById('toggleButton');
   const $tableContainer = document.getElementById('tableContainer');
   const $tbody = document.getElementById('tableBody');
+  const $cadastrarUnidadeBtn = document.getElementById('cadastrarUnidadeBtn');
 
-  for (const r of DATA) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${r.numero || ''}</td><td>${r.unidade || ''}</td><td>${r.consultor || ''}</td>`;
-    $tbody.appendChild(tr);
-    const option = document.createElement('option');
-    option.value = r.unidade;
-    $suggestions.appendChild(option);
+  // Editor Modal Elements
+  const $editorModal = document.getElementById('editorModal');
+  const $editorListContainer = document.getElementById('editorListContainer');
+  const $newUnidadeInput = document.getElementById('newUnidadeInput');
+  const $newConsultorSelect = document.getElementById('newConsultorSelect');
+  const $addUnitBtn = document.getElementById('addUnitBtn');
+  const $cancelEditorBtn = document.getElementById('cancelEditorBtn');
+  const $saveAndCloseEditorBtn = document.getElementById('saveAndCloseEditorBtn');
+  const $saveToFileBtn = document.getElementById('saveToFileBtn');
+
+  // --- Main Page Logic ---
+  function populateMaps() {
+    byCode.clear();
+    byName.clear();
+    for (const r of DATA) {
+      byCode.set(String(r.numero), r);
+      byName.set(r.unidade.toUpperCase(), r);
+    }
+  }
+
+  function updateTableAndSuggestions() {
+    $tbody.innerHTML = '';
+    $suggestions.innerHTML = '';
+    DATA.sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+    for (const r of DATA) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.numero || ''}</td><td>${r.unidade || ''}</td><td>${r.consultor || ''}</td>`;
+      $tbody.appendChild(tr);
+      const option = document.createElement('option');
+      option.value = r.unidade;
+      $suggestions.appendChild(option);
+    }
   }
 
   function showRecord(r, inputValue) {
-    if (!r && !inputValue) {
-        $resultCard.style.display = 'none';
-        return;
-    }
+    if (!r && !inputValue) { $resultCard.style.display = 'none'; return; }
     $resultCard.style.display = 'block';
     $outN.textContent = (r && r.numero) || '—';
     if (r) {
@@ -266,36 +444,210 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function search() {
     const raw = $in.value.trim().toUpperCase();
-    if (!raw) {
-        showRecord(null, '');
-        return;
-    };
+    if (!raw) { showRecord(null, ''); return; };
     let rec = byCode.get(raw.replace(/\D+/g, '').replace(/^0+/, '') || '0');
-    if (!rec) {
-      rec = byName.get(raw);
-    }
+    if (!rec) { rec = byName.get(raw); }
     showRecord(rec, $in.value.trim());
   }
   
-  function clearSearch() {
-    $in.value = '';
-    showRecord(null, '');
-  }
-
+  $in.disabled = false;
+  $in.placeholder = 'Buscar por código ou nome...';
   $in.addEventListener('input', search);
   $in.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') search();
-    if (e.key === 'Escape') clearSearch();
+    if (e.key === 'Escape') { $in.value = ''; showRecord(null, ''); }
   });
-
-  $clearButton.addEventListener('click', clearSearch);
-
+  $clearButton.addEventListener('click', () => { $in.value = ''; showRecord(null, ''); });
   $toggleBtn.addEventListener('click', () => {
     const isVisible = $tableContainer.style.display === 'block';
     $tableContainer.style.display = isVisible ? 'none' : 'block';
     $toggleBtn.textContent = isVisible ? 'VER TODAS AS UNIDADES' : 'OCULTAR LISTA';
   });
-});
+
+  // --- Editor Modal Logic ---
+  function createConsultantSelect(selectedValue) {
+    const select = document.createElement('select');
+    CONSULTANTS.forEach(c => {
+      const option = document.createElement('option');
+      option.value = c;
+      option.textContent = c;
+      if (c === selectedValue) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    });
+    return select;
+  }
+
+  function renderEditorList() {
+    $editorListContainer.innerHTML = '';
+    tempEditorData.sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
+    tempEditorData.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'editor-list-item';
+      
+      const idSpan = document.createElement('span');
+      idSpan.textContent = item.numero;
+
+      const unidadeInput = document.createElement('input');
+      unidadeInput.type = 'text';
+      unidadeInput.value = item.unidade;
+      unidadeInput.dataset.numero = item.numero;
+      unidadeInput.className = 'edit-unidade-input';
+
+      const consultorSelect = createConsultantSelect(item.consultor);
+      consultorSelect.dataset.numero = item.numero;
+      consultorSelect.className = 'edit-consultor-select';
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.dataset.numero = item.numero;
+      deleteBtn.textContent = 'Apagar';
+
+      div.append(idSpan, unidadeInput, consultorSelect, deleteBtn);
+      $editorListContainer.appendChild(div);
+    });
+  }
+
+  function openEditor() {
+    tempEditorData = JSON.parse(JSON.stringify(DATA)); // Deep copy
+    $newConsultorSelect.innerHTML = '';
+    const placeholder = document.createElement('option');
+    placeholder.textContent = 'Selecione o consultor';
+    placeholder.value = '';
+    $newConsultorSelect.appendChild(placeholder);
+    CONSULTANTS.forEach(c => {
+        const option = document.createElement('option');
+        option.value = c;
+        option.textContent = c;
+        $newConsultorSelect.appendChild(option);
+    });
+
+    renderEditorList();
+    $editorModal.style.display = 'flex';
+  }
+
+  function closeEditor() {
+    $editorModal.style.display = 'none';
+  }
+  
+  function applyAndCloseEditor() {
+    DATA = JSON.parse(JSON.stringify(tempEditorData)); // Commit changes
+    populateMaps();
+    updateTableAndSuggestions();
+    closeEditor();
+    Swal.fire('Aplicado', 'As alterações foram aplicadas na página. Para salvar permanentemente, clique em "Salvar Alterações no Arquivo".', 'success');
+  }
+
+  $cadastrarUnidadeBtn.addEventListener('click', async () => {
+    const { value: senha } = await Swal.fire({
+      title: 'Acesso Restrito',
+      input: 'password',
+      inputLabel: 'Digite a senha para gerenciar as unidades',
+      inputPlaceholder: 'Digite sua senha',
+      inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
+      showCancelButton: true,
+      confirmButtonText: 'Entrar',
+      cancelButtonText: 'Cancelar',
+    });
+
+    if (senha === 'meus7bigodes') {
+      openEditor();
+    } else if (senha) {
+      Swal.fire({ icon: 'error', title: 'Senha Incorreta', text: 'Você não tem permissão para acessar esta área.' });
+    }
+  });
+
+  $editorListContainer.addEventListener('change', (e) => {
+    const numero = e.target.dataset.numero;
+    if (!numero) return;
+
+    const itemIndex = tempEditorData.findIndex(item => item.numero === numero);
+    if (itemIndex === -1) return;
+
+    if (e.target.classList.contains('edit-unidade-input')) {
+      const newName = e.target.value.trim().toUpperCase();
+      if (tempEditorData.some(item => item.unidade.toUpperCase() === newName && item.numero !== numero)) {
+        Swal.fire('Erro', `A unidade "${newName}" já existe.`, 'error');
+        e.target.value = tempEditorData[itemIndex].unidade; // Revert change
+        return;
+      }
+      tempEditorData[itemIndex].unidade = newName;
+    } else if (e.target.classList.contains('edit-consultor-select')) {
+      tempEditorData[itemIndex].consultor = e.target.value;
+    }
+  });
+
+  $editorListContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('delete-btn')) {
+      const numero = e.target.getAttribute('data-numero');
+      Swal.fire({
+        title: 'Tem certeza?',
+        text: "A unidade será apagada. Esta ação não pode ser desfeita.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sim, apagar!',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          tempEditorData = tempEditorData.filter(item => item.numero !== numero);
+          renderEditorList();
+          Swal.fire('Apagado!', 'A unidade foi removida da lista.', 'success');
+        }
+      });
+    }
+  });
+
+  $addUnitBtn.addEventListener('click', () => {
+    const unidade = $newUnidadeInput.value.trim().toUpperCase();
+    const consultor = $newConsultorSelect.value;
+
+    if (!unidade || !consultor) {
+      Swal.fire('Atenção', 'Por favor, preencha os nomes da unidade e selecione um consultor.', 'warning');
+      return;
+    }
+    if (tempEditorData.some(item => item.unidade.toUpperCase() === unidade)) {
+      Swal.fire('Erro', 'Esta unidade já está cadastrada.', 'error');
+      return;
+    }
+
+    const maxId = tempEditorData.reduce((max, item) => Math.max(max, parseInt(item.numero) || 0), 0);
+    const newUnit = { numero: String(maxId + 1), unidade: unidade, consultor: consultor };
+    tempEditorData.push(newUnit);
+    renderEditorList();
+    $newUnidadeInput.value = '';
+    $newConsultorSelect.value = '';
+  });
+
+  $cancelEditorBtn.addEventListener('click', closeEditor);
+  $saveAndCloseEditorBtn.addEventListener('click', applyAndCloseEditor);
+  
+  $saveToFileBtn.addEventListener('click', () => {
+    const dataString = JSON.stringify(tempEditorData, null, 2);
+    
+    navigator.clipboard.writeText(dataString).then(() => {
+      Swal.fire({
+        title: 'JSON Copiado!',
+        html: 'Cole o conteúdo JSON que foi copiado no chat para que eu possa salvar as alterações permanentemente no arquivo <code>unidades.json</code>.',
+        icon: 'info'
+      });
+    }, () => {
+      Swal.fire('Erro', 'Não foi possível copiar o JSON automaticamente. Por favor, copie manualmente da caixa de texto abaixo.', 'error');
+      Swal.fire({
+        title: 'Copie este código JSON',
+        html: `<textarea style="width: 100%; height: 200px;">${dataString}</textarea>`,
+        confirmButtonText: 'Fechar'
+      });
+    });
+  });
+
+  // --- Initial Page Load ---
+  populateMaps();
+  updateTableAndSuggestions();
+}
+
 </script>
 </body>
 </html>
