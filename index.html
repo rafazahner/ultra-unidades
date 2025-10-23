@@ -143,6 +143,16 @@ h1 {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(34, 211, 238, 0.4);
 }
+.notice {
+  margin: 16px 0 8px 0;
+  padding: 12px 16px;
+  background: #FFF3CD;
+  color: #664D03;
+  border: 1px solid #FFECB5;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  text-align: center;
+}
 #tableContainer { display: none; }
 #tableContainer h2 {
   font-size: 1.4rem;
@@ -294,6 +304,8 @@ tbody tr:hover { background-color: #F8F9FA; }
     <h1>CONSULTA DE UNIDADES</h1>
     <p>Digite o código ou nome da unidade para visualizar os detalhes.</p>
 
+    <div id="loadingNotice" class="notice">Carregando dados da planilha...</div>
+
     <section class="search-box">
       <input id="unitInput" list="unitSuggestions" autocomplete="off" placeholder="Buscando dados..." class="search-input" disabled />
       <datalist id="unitSuggestions"></datalist>
@@ -310,7 +322,7 @@ tbody tr:hover { background-color: #F8F9FA; }
 
     <div class="toggle-list">
       <button id="toggleButton" class="toggle-btn">VER TODAS AS UNIDADES</button>
-      <button id="cadastrarUnidadeBtn" class="toggle-btn" style="margin-left: 10px; background-color: var(--theme-purple); box-shadow: 0 4px 15px rgba(153, 51, 234, 0.3);">GERENCIAR UNIDADES</button>
+      <button id="refreshNowBtn" class="toggle-btn" style="margin-left: 10px; background-color: var(--theme-orange); box-shadow: 0 4px 15px rgba(255, 119, 0, 0.3);">ATUALIZAR AGORA</button>
     </div>
 
     <section id="tableContainer">
@@ -351,409 +363,62 @@ tbody tr:hover { background-color: #F8F9FA; }
 <!-- SweetAlert2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// Dados embutidos em variável para eliminar dependência de unidades.json
-let DATA = [
-  {
-    "numero": "1",
-    "unidade": "AUGUSTA",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "2",
-    "unidade": "JUNDIAI",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "3",
-    "unidade": "BERRINI",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "4",
-    "unidade": "BARRA FUNDA",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "5",
-    "unidade": "MOOCA",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "6",
-    "unidade": "ACLIMAÇÃO",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "7",
-    "unidade": "VILA MARIANA",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "8",
-    "unidade": "PLAZA SUL",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "9",
-    "unidade": "SANTOS",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "10",
-    "unidade": "JARDIM BOTANICO",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "15",
-    "unidade": "ASA NORTE",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "16",
-    "unidade": "LAGO SUL",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "17",
-    "unidade": "TAUBATE",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "18",
-    "unidade": "VILA GUILHERME",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "19",
-    "unidade": "GUARUJA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "20",
-    "unidade": "BRASILANDIA",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "21",
-    "unidade": "CAMPO LIMPO",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "22",
-    "unidade": "SETOR OESTE",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "23",
-    "unidade": "CRUZEIRO",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "24",
-    "unidade": "ÁGUAS CLARAS",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "26",
-    "unidade": "CENTRO COMENDADOR",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "27",
-    "unidade": "SOBRADINHO",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "28",
-    "unidade": "SORRISO",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "29",
-    "unidade": "CABO FRIO",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "30",
-    "unidade": "CEILANDIA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "31",
-    "unidade": "VILA MATILDE",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "32",
-    "unidade": "ARAPOANGA PLANALTINA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "33",
-    "unidade": "ALEXANDRINA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "34",
-    "unidade": "SERRA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "35",
-    "unidade": "PRAIA GRANDE",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "36",
-    "unidade": "CEILANDIA SUL",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "37",
-    "unidade": "SAMAMBAIA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "38",
-    "unidade": "RECANTO DAS EMAS",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "39",
-    "unidade": "LAGO NORTE",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "40",
-    "unidade": "CARAPICUIBA",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "41",
-    "unidade": "TAGUATINGA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "42",
-    "unidade": "CAMPO LARGO",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "43",
-    "unidade": "SANTA MARIA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "45",
-    "unidade": "POA BARRA SUL",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "46",
-    "unidade": "BOA VISTA",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "47",
-    "unidade": "SUZANO",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "48",
-    "unidade": "VICENTE PIRES",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "49",
-    "unidade": "JARDIM APURA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "50",
-    "unidade": "ÁGUAS LINDAS",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "54",
-    "unidade": "COTIA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "55",
-    "unidade": "PARANOA PARQUE",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "57",
-    "unidade": "NOROESTE",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "58",
-    "unidade": "MOCOCA",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "59",
-    "unidade": "VALPARAISO",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "60",
-    "unidade": "CAMBUI",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "61",
-    "unidade": "CEILÂNDIA QNM33",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "62",
-    "unidade": "CUIABA CPA",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "63",
-    "unidade": "CENTER SHOPPING",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "64",
-    "unidade": "BOTAFOGO",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "65",
-    "unidade": "CESARIO",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "66",
-    "unidade": "ICARAÍ",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "67",
-    "unidade": "PIÇARRAS",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "68",
-    "unidade": "CARIACICA",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "69",
-    "unidade": "VILA GUANABARA",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "70",
-    "unidade": "BANGU",
-    "consultor": "GUILHERME"
-  },
-  {
-    "numero": "71",
-    "unidade": "UNAI",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "72",
-    "unidade": "FLORIANO",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "73",
-    "unidade": "BURITIS",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "74",
-    "unidade": "BOTANIC MALL",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "75",
-    "unidade": "TAGUATINGA SUL",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "76",
-    "unidade": "FLOW",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "77",
-    "unidade": "GUARAPARI",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "78",
-    "unidade": "BERTIOGA",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "79",
-    "unidade": "AMERICANA CENTRO",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "80",
-    "unidade": "ANDRÉ DE BARROS",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "81",
-    "unidade": "BUTANTÃ",
-    "consultor": "ANDERSON"
-  },
-  {
-    "numero": "82",
-    "unidade": "PÁTIO BRASIL",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "83",
-    "unidade": "SANTO ALBANO",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "84",
-    "unidade": "SAGRADA FAMILIA",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "85",
-    "unidade": "VILLA BRANCA",
-    "consultor": "ULTRA 90"
-  },
-  {
-    "numero": "86",
-    "unidade": "SÃO GONÇALO SHOPPING",
-    "consultor": "ULTRA 90"
-  },
-   {
-    "numero": "87",
-    "unidade": "TESTE",
-    "consultor": "ULTRA 90"
-  }
-]
-;
+// URL do Web App do Google Apps Script (termina com /exec)
+// Ex.: https://script.google.com/macros/s/AKfycbxxxx/exec
+const API_URL = 'https://script.google.com/macros/s/AKfycbxmbbXyoIcj3k9uNvI4Q6XD5T9bm0ajPpbScAvZeR4Vbd6ToCmi-gbPKwqC7GzURhMnzQ/exec';
+// Token opcional para validar no Apps Script (deixe vazio se não usar)
+const API_TOKEN = '';
+// Intervalo de atualização automática (ms)
+const AUTO_REFRESH_MS = 30000;
+// Dados serão carregados da API do Google Sheets
+let DATA = [];
 
 let tempEditorData = [];
 const CONSULTANTS = ['GUILHERME', 'ANDERSON', 'ULTRA 90'];
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Dados já estão carregados na variável DATA
-  initializeApp();
+  loadDataThenInit();
 });
+
+async function loadDataThenInit() {
+  // Se a URL não foi configurada, use dados embutidos e avise o usuário
+  if (!API_URL || /COLE_AQUI/i.test(API_URL)) {
+    console.warn('API_URL não configurada. Usando dados embutidos.');
+    if (typeof Swal !== 'undefined') {
+      Swal.fire('Configuração necessária', 'Defina a URL do seu Web App do Apps Script na constante API_URL no index.html.', 'info');
+    }
+    initializeApp();
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}?action=list`, { method: 'GET', cache: 'no-store' });
+    if (res.ok) {
+      const body = await res.json();
+      const rows = Array.isArray(body) ? body : (body && Array.isArray(body.rows) ? body.rows : null);
+      if (rows) {
+        DATA = rows
+          .map(r => ({
+            numero: String(r.numero ?? r.id ?? '').trim(),
+            unidade: String(r.unidade ?? r.nome ?? '').trim().toUpperCase(),
+            consultor: String(r.consultor ?? '').trim().toUpperCase(),
+          }))
+          .filter(r => r.numero);
+      }
+    }
+  } catch (err) {
+    console.warn('API indisponível, usando dados embutidos:', err);
+  } finally {
+    initializeApp();
+  }
+}
 
 function initializeApp() {
   // Main Page Elements
   const byCode = new Map();
   const byName = new Map();
   const $in = document.getElementById('unitInput');
+  const $loadingNotice = document.getElementById('loadingNotice');
   const $suggestions = document.getElementById('unitSuggestions');
   const $clearButton = document.getElementById('clearButton');
   const $resultCard = document.getElementById('resultCard');
@@ -765,6 +430,7 @@ function initializeApp() {
   const $tableContainer = document.getElementById('tableContainer');
   const $tbody = document.getElementById('tableBody');
   const $cadastrarUnidadeBtn = document.getElementById('cadastrarUnidadeBtn');
+  const $refreshNowBtn = document.getElementById('refreshNowBtn');
 
   // Editor Modal Elements
   const $editorModal = document.getElementById('editorModal');
@@ -774,6 +440,8 @@ function initializeApp() {
   const $addUnitBtn = document.getElementById('addUnitBtn');
   const $cancelEditorBtn = document.getElementById('cancelEditorBtn');
   const $saveToFileBtn = document.getElementById('saveToFileBtn');
+  let isEditorOpen = false;
+  let lastDataHash = '';
 
   // --- Main Page Logic ---
   function populateMaps() {
@@ -796,6 +464,88 @@ function initializeApp() {
       const option = document.createElement('option');
       option.value = r.unidade;
       $suggestions.appendChild(option);
+    }
+  }
+
+  // Estado inicial do input conforme dados carregados
+  if (Array.isArray(DATA) && DATA.length > 0) {
+    if ($loadingNotice) $loadingNotice.style.display = 'none';
+    $in.disabled = false;
+    $in.placeholder = 'Buscar por código ou nome...';
+  } else {
+    if ($loadingNotice) {
+      $loadingNotice.textContent = 'Não foi possível carregar dados da planilha ainda. Você pode tentar ATUALIZAR AGORA.';
+      $loadingNotice.style.display = 'block';
+    }
+    $in.disabled = true;
+    $in.placeholder = 'Aguardando dados da planilha...';
+  }
+
+  function computeDataHash(arr) {
+    try {
+      const norm = (arr || []).map(r => ({
+        numero: String(r.numero || ''),
+        unidade: String(r.unidade || '').toUpperCase(),
+        consultor: String(r.consultor || '').toUpperCase(),
+      })).sort((a,b) => parseInt(a.numero) - parseInt(b.numero));
+      return JSON.stringify(norm);
+    } catch {
+      return '';
+    }
+  }
+
+  async function fetchListFromAPI() {
+    // Tenta com action=list, depois sem parâmetro (fallback)
+    try {
+      const res = await fetch(`${API_URL}?action=list`, { method: 'GET', cache: 'no-store' });
+      if (res.ok) {
+        const body = await res.json();
+        if (Array.isArray(body)) return body;
+        if (body && Array.isArray(body.rows)) return body.rows;
+      }
+    } catch {}
+    try {
+      const res2 = await fetch(API_URL, { method: 'GET', cache: 'no-store' });
+      if (res2.ok) {
+        const body2 = await res2.json();
+        if (Array.isArray(body2)) return body2;
+        if (body2 && Array.isArray(body2.rows)) return body2.rows;
+      }
+    } catch {}
+    return null;
+  }
+
+  async function refreshFromAPI({ showToastOnChange = true } = {}) {
+    if (isEditorOpen) return; // evita conflitos enquanto edita
+    const rows = await fetchListFromAPI();
+    if (!rows) return;
+    const incoming = rows.map(r => ({
+      numero: String(r.numero ?? r.id ?? '').trim(),
+      unidade: String(r.unidade ?? r.nome ?? '').trim().toUpperCase(),
+      consultor: String(r.consultor ?? '').trim().toUpperCase(),
+    })).filter(r => r.numero);
+    const newHash = computeDataHash(incoming);
+    if (newHash && newHash !== lastDataHash) {
+      DATA = incoming;
+      populateMaps();
+      updateTableAndSuggestions();
+      lastDataHash = newHash;
+      // Habilita busca e oculta aviso assim que dados chegarem
+      if ($in.disabled) {
+        $in.disabled = false;
+        $in.placeholder = 'Buscar por código ou nome...';
+      }
+      if ($loadingNotice) $loadingNotice.style.display = 'none';
+      if (showToastOnChange && typeof Swal !== 'undefined') {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'info',
+          title: 'Lista de unidades atualizada',
+          showConfirmButton: false,
+          timer: 2000
+        });
+      }
     }
   }
 
@@ -822,8 +572,6 @@ function initializeApp() {
     showRecord(rec, $in.value.trim());
   }
   
-  $in.disabled = false;
-  $in.placeholder = 'Buscar por código ou nome...';
   $in.addEventListener('input', search);
   $in.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') search();
@@ -835,6 +583,21 @@ function initializeApp() {
     $tableContainer.style.display = isVisible ? 'none' : 'block';
     $toggleBtn.textContent = isVisible ? 'VER TODAS AS UNIDADES' : 'OCULTAR LISTA';
   });
+
+  // Atualização manual
+  if ($refreshNowBtn) {
+    $refreshNowBtn.addEventListener('click', async () => {
+      const original = $refreshNowBtn.textContent;
+      $refreshNowBtn.disabled = true;
+      $refreshNowBtn.textContent = 'Atualizando...';
+      try {
+        await refreshFromAPI({ showToastOnChange: true });
+      } finally {
+        $refreshNowBtn.disabled = false;
+        $refreshNowBtn.textContent = original;
+      }
+    });
+  }
 
   // --- Editor Modal Logic ---
   function createConsultantSelect(selectedValue) {
@@ -882,6 +645,7 @@ function initializeApp() {
   }
 
   function openEditor() {
+    isEditorOpen = true;
     tempEditorData = JSON.parse(JSON.stringify(DATA)); // Deep copy
     $newConsultorSelect.innerHTML = '';
     const placeholder = document.createElement('option');
@@ -901,26 +665,29 @@ function initializeApp() {
 
   function closeEditor() {
     $editorModal.style.display = 'none';
+    isEditorOpen = false;
   }
 
-  $cadastrarUnidadeBtn.addEventListener('click', async () => {
-    const { value: senha } = await Swal.fire({
-      title: 'Acesso Restrito',
-      input: 'password',
-      inputLabel: 'Digite a senha para gerenciar as unidades',
-      inputPlaceholder: 'Digite sua senha',
-      inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
-      showCancelButton: true,
-      confirmButtonText: 'Entrar',
-      cancelButtonText: 'Cancelar',
-    });
+  if ($cadastrarUnidadeBtn) {
+    $cadastrarUnidadeBtn.addEventListener('click', async () => {
+      const { value: senha } = await Swal.fire({
+        title: 'Acesso Restrito',
+        input: 'password',
+        inputLabel: 'Digite a senha para gerenciar as unidades',
+        inputPlaceholder: 'Digite sua senha',
+        inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
+        showCancelButton: true,
+        confirmButtonText: 'Entrar',
+        cancelButtonText: 'Cancelar',
+      });
 
-    if (senha === 'meus7bigodes') {
-      openEditor();
-    } else if (senha) {
-      Swal.fire({ icon: 'error', title: 'Senha Incorreta', text: 'Você não tem permissão para acessar esta área.' });
-    }
-  });
+      if (senha === 'meus7bigodes') {
+        openEditor();
+      } else if (senha) {
+        Swal.fire({ icon: 'error', title: 'Senha Incorreta', text: 'Você não tem permissão para acessar esta área.' });
+      }
+    });
+  }
 
   $editorListContainer.addEventListener('change', (e) => {
     const numero = e.target.dataset.numero;
@@ -990,7 +757,7 @@ function initializeApp() {
   $saveToFileBtn.addEventListener('click', () => {
     Swal.fire({
       title: 'Salvar permanentemente?',
-      text: "Isso irá sobrescrever o arquivo unidades.json com as alterações atuais.",
+      text: "Isso irá salvar as alterações na planilha do Google.",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -999,38 +766,59 @@ function initializeApp() {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch('/save', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(tempEditorData),
-        })
-        .then(response => response.json())
-        .then(serverData => {
-          if (serverData.success) {
-            DATA = JSON.parse(JSON.stringify(tempEditorData));
-            populateMaps();
-            updateTableAndSuggestions();
-            Swal.fire('Salvo!', 'Os dados foram salvos permanentemente no servidor.', 'success');
-            closeEditor();
-          } else {
-            throw new Error(serverData.message || 'Erro desconhecido no servidor.');
-          }
-        })
-        .catch(error => {
-          console.error('Error saving data:', error);
-          Swal.fire('Erro de Comunicação', `Não foi possível salvar os dados. Verifique se o servidor está rodando. Detalhes: ${error.message}`, 'error');
-        });
+        saveToAPI();
       }
     });
   });
 
+  async function saveToAPI() {
+    const originalText = $saveToFileBtn.textContent;
+    $saveToFileBtn.disabled = true;
+    $saveToFileBtn.textContent = 'Salvando...';
+
+    try {
+      const resp = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' }, // evita preflight CORS
+        body: JSON.stringify({ action: 'saveAll', data: tempEditorData, ...(API_TOKEN ? { token: API_TOKEN } : {}) }),
+      });
+      const serverData = await resp.json();
+      if (!resp.ok || !serverData.success) {
+        throw new Error(serverData.message || `HTTP ${resp.status}`);
+      }
+      DATA = JSON.parse(JSON.stringify(tempEditorData));
+      populateMaps();
+      updateTableAndSuggestions();
+      lastDataHash = computeDataHash(DATA);
+      Swal.fire('Salvo!', 'Os dados foram salvos na planilha.', 'success');
+      closeEditor();
+    } catch (error) {
+      console.error('Error saving data:', error);
+      Swal.fire('Erro de Comunicação', `Não foi possível salvar os dados. Detalhes: ${error.message}`, 'error');
+    } finally {
+      $saveToFileBtn.disabled = false;
+      $saveToFileBtn.textContent = originalText;
+    }
+  }
+
   // --- Initial Page Load ---
   populateMaps();
   updateTableAndSuggestions();
+  lastDataHash = computeDataHash(DATA);
+
+  // Auto refresh periódico e ao focar a janela
+  try {
+    setInterval(() => { refreshFromAPI({ showToastOnChange: true }); }, AUTO_REFRESH_MS);
+    window.addEventListener('focus', () => { refreshFromAPI({ showToastOnChange: false }); });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        refreshFromAPI({ showToastOnChange: false });
+      }
+    });
+  } catch {}
 }
 
 </script>
 </body>
 </html>
+
